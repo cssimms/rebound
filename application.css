@@ -1,3 +1,43 @@
+body {
+  background-color: black;
+}
+
+h1 {
+  text-align: center;
+  letter-spacing: 3px;
+  color: black;
+  text-shadow:
+   -1px -1px 0 #b17200,
+    1px -1px 0 #b17200,
+    -1px 1px 0 #b17200,
+     1px 1px 0 #b17200;
+}
+
+button {
+  background-color: #b17200;
+  display: block;
+  padding: 0;
+  margin: auto;
+  width: 100px;
+  height: 30px;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+button:hover {
+  background-color: orange;
+}
+
+div {
+  padding: 0;
+  margin: auto;
+  width: 600px;
+}
+
 canvas {
+  padding: 0;
+  margin: auto;
   cursor: crosshair;
+  border: 1px solid #b17200;
+
 }
