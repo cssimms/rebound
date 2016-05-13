@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Game = __webpack_require__(1);
-	var GameView = __webpack_require__(7);
+	var GameView = __webpack_require__(9);
 
 	var element = document.getElementById("game-canvas");
 	var ctx = element.getContext("2d");
@@ -71,8 +71,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Arena = __webpack_require__(2),
-	Player = __webpack_require__(3),
-	ComputerPlayer = __webpack_require__(6);
+	Player = __webpack_require__(5),
+	ComputerPlayer = __webpack_require__(8);
 
 	var Game = function (level) {
 	  this.DIM_X = 600;
@@ -147,8 +147,10 @@
 	      return;
 	    } else {
 	      this.players[key].fall();
-	      this.state = 'over';
 	      this.looser = key;
+	    }
+	    if (this.players[key].fallCount > 9){
+	      this.state = 'over';
 	    }
 	  }.bind(this));
 	};
@@ -176,7 +178,7 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var StationaryObject = __webpack_require__(9);
+	var StationaryObject = __webpack_require__(3);
 
 	var Arena = function (level) {
 	  this.LEVEL = level;
@@ -389,13 +391,94 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var Util = __webpack_require__(4);
+
+	var StationaryObject = function (args) {
+	  this.type = args["type"];
+	  this.x = args["x"];
+	  this.y = args["y"];
+	  this.width = args["width"];
+	  this.height = args["height"];
+	  this.color = args["color"];
+	};
+
+	StationaryObject.prototype.bounceVec = function (vel) {
+	  if (this.type === 'platform'){
+	    return;
+	  } else if (this.type === 'north' || this.type === 'south') {
+	    return ([vel[0], vel[1] * -1]);
+	  } else if (this.type === 'west' || this.type === 'east') {
+	    return ([vel[0] * -1, vel[1]]);
+	  }
+	};
+
+	StationaryObject.prototype.collideWith = function () {
+
+	};
+
+	StationaryObject.prototype.isCollidedWith = function () {
+	  return false;
+	};
+
+	StationaryObject.prototype.move = function () {
+
+	};
+
+	StationaryObject.prototype.draw = function (ctx) {
+	  ctx.fillStyle = this.color;
+	  ctx.fillRect(
+	    this.x,
+	    this.y,
+	    this.width,
+	    this.height
+	  );
+	};
+
+	module.exports = StationaryObject;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	var Util = function(){};
+
+	Util.inherits = function (Child, Parent) {
+	  var Surrogate = function () {};
+	  Surrogate.prototype = Parent.prototype;
+	  Child.prototype = new Surrogate;
+	  Child.constructor = Child;
+	};
+
+	Util.normalizedVector = function (start, target) {
+	  var magnitude = this.magnitude(start, target);
+	  var vector = ([
+	      (target[0] - start[0]), (target[1] - start[1])
+	    ]);
+	  return [(vector[0] / magnitude), (vector[1] / magnitude)];
+	};
+
+	Util.magnitude = function (start, end) {
+	  var xDiff = (start[0] - end[0]);
+	  var yDiff = (start[1] - end[1]);
+
+	  return Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+	};
+
+	module.exports = Util;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var Utils = __webpack_require__(4),
-	Disc = __webpack_require__(8),
-	MovingObject = __webpack_require__(5);
+	Disc = __webpack_require__(6),
+	MovingObject = __webpack_require__(7);
 
 	var Player = function(args){
 	  this.RADIUS = 10;
-	  this.COLOR = '#ff6666';
+	  this.COLOR = '#6666ff';
 	  this.fallCount = 0;
 	  this.moveCount = 0;
 	  this.discs = [];
@@ -432,7 +515,7 @@
 	    game: this.game,
 	    pos: this.pos.slice(),
 	    target: [x,y],
-	    color: '#7f3333'
+	    color: '#0000a1'
 	  });
 	  this.discs.push(disc);
 	  this.game.shootDisc(disc);
@@ -478,41 +561,92 @@
 
 
 /***/ },
-/* 4 */
-/***/ function(module, exports) {
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
 
-	var Util = function(){};
+	var Util = __webpack_require__(4),
+	MovingObject = __webpack_require__(7),
+	StationaryObject = __webpack_require__(3);
 
-	Util.inherits = function (Child, Parent) {
-	  var Surrogate = function () {};
-	  Surrogate.prototype = Parent.prototype;
-	  Child.prototype = new Surrogate;
-	  Child.constructor = Child;
+	var Disc = function (args) {
+	  this.RADIUS = 5;
+	  this.VELOCITY = this.calcVel(args['pos'], args['target']);
+	  this.PLAYER = args['player'];
+	  MovingObject.call(this, {
+	    game: args['game'],
+	    pos: args['pos'],
+	    vel: this.VELOCITY,
+	    radius: this.RADIUS,
+	    color: args['color']
+	  });
+	  this.startRecallTimer();
 	};
 
-	Util.normalizedVector = function (start, target) {
-	  var magnitude = this.magnitude(start, target);
-	  var vector = ([
-	      (target[0] - start[0]), (target[1] - start[1])
-	    ]);
-	  return [(vector[0] / magnitude), (vector[1] / magnitude)];
+	Util.inherits(Disc, MovingObject);
+
+	Disc.prototype.calcVel = function (start, target) {
+	  var vel = Util.normalizedVector(start, target);
+	  return [vel[0] * 3, vel[1] * 3];
 	};
 
-	Util.magnitude = function (start, end) {
-	  var xDiff = (start[0] - end[0]);
-	  var yDiff = (start[1] - end[1]);
-
-	  return Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+	Disc.prototype.startRecallTimer = function () {
+	  setTimeout(function () {
+	    this.recall();
+	  }.bind(this), 5000);
 	};
 
-	module.exports = Util;
+	Disc.prototype.recall = function () {
+	  this.PLAYER.removeDisc(this);
+	  this.game.removeDisc(this);
+	};
+
+	Disc.prototype.collideWith = function (otherObject) {
+	  // check for instanceof Player or ComputerPlayer??
+
+	    if (otherObject instanceof MovingObject) {
+	      if (!(otherObject instanceof Disc)) {
+	        otherObject.hitByDisc(this.vel);
+	      }
+	      this.vel = [this.vel[0] * -1, this.vel[1] * -1];
+
+	    } else if (otherObject instanceof StationaryObject) {
+	      this.vel = otherObject.bounceVec(this.vel);
+	    }
+	};
+
+	Disc.prototype.isCollidedWith = function (otherObject) {
+	  if (otherObject instanceof MovingObject) {
+	    var xDiff = (this.pos[0] - otherObject.pos[0]);
+	    var yDiff = (this.pos[1] - otherObject.pos[1]);
+	    var radii = this.radius + otherObject.radius;
+	    var distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+	    if (distance < radii) {
+	      return true;
+	    }
+	    return false;
+	  } else if (otherObject.type !== 'platform'){
+	    if (
+	      (this.pos[0] < otherObject.x + otherObject.width) &&
+	      (this.pos[0] > otherObject.x) &&
+	      (this.pos[1] < otherObject.y + otherObject.height) &&
+	      (this.pos[1] > otherObject.y)
+	    ) {
+	        return true;
+	      } else {
+	        return false;
+	      }
+	  } else {
+	    return false;
+	  }
+	};
+	module.exports = Disc;
 
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var StationaryObject = __webpack_require__(9);
+	var StationaryObject = __webpack_require__(3);
 
 	var MovingObject = function(args){
 	  this.game = args["game"];
@@ -548,16 +682,17 @@
 
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Util = __webpack_require__(4),
-	Disc = __webpack_require__(8),
-	MovingObject = __webpack_require__(5);
+	Disc = __webpack_require__(6),
+	MovingObject = __webpack_require__(7);
 
 	var ComputerPlayer = function (args) {
 	  this.RADIUS = 10;
-	  this.COLOR = '#6666ff';
+	  this.COLOR = '#ff6666';
+
 	  this.fallCount = 0;
 	  this.moveCount = 0;
 	  this.fallen = false;
@@ -609,7 +744,7 @@
 	    game: this.game,
 	    pos: this.pos.slice(),
 	    target: [x,y],
-	    color: '#0000a1'
+	    color: '#7f3333'
 	  });
 	  this.discs.push(compDisc);
 	  this.game.shootDisc(compDisc);
@@ -708,13 +843,13 @@
 
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* global key */
 
 	var Utils = __webpack_require__(4),
-	MovingObject = __webpack_require__(5),
+	MovingObject = __webpack_require__(7),
 	Game = __webpack_require__(1);
 
 	var GameView = function(game, ctx){
@@ -723,8 +858,9 @@
 	};
 
 	GameView.prototype.start = function () {
-	  this.bindKeyHandlers();
+	  $('.message').text('Throw discs to push Crom off his platform!');
 	  this.interval = setInterval(this.loop.bind(this), 15);
+	  this.bindKeyHandlers();
 	};
 
 	GameView.prototype.stop = function () {
@@ -737,9 +873,9 @@
 	  if (game.state === 'over'){
 	    that.stop();
 	    if (game.looser === 'player') {
-	      $('h1').text('You Lose');
+	      $('.message').text('You Lose');
 	    } else if (that.game.level > 1){
-	      $('h1').text('You Win!');      
+	      $('.message').text('You Win!');
 	    } else {
 	      var newGame = new Game(game.level + 1);
 	      that.game = newGame;
@@ -761,138 +897,6 @@
 	};
 
 	module.exports = GameView;
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Util = __webpack_require__(4),
-	MovingObject = __webpack_require__(5),
-	StationaryObject = __webpack_require__(9);
-
-	var Disc = function (args) {
-	  this.RADIUS = 5;
-	  this.VELOCITY = this.calcVel(args['pos'], args['target']);
-	  this.PLAYER = args['player'];
-	  MovingObject.call(this, {
-	    game: args['game'],
-	    pos: args['pos'],
-	    vel: this.VELOCITY,
-	    radius: this.RADIUS,
-	    color: args['color']
-	  });
-	  this.startRecallTimer();
-	};
-
-	Util.inherits(Disc, MovingObject);
-
-	Disc.prototype.calcVel = function (start, target) {
-	  var vel = Util.normalizedVector(start, target);
-	  return [vel[0] * 3, vel[1] * 3];
-	};
-
-	Disc.prototype.startRecallTimer = function () {
-	  setTimeout(function () {
-	    this.recall();
-	  }.bind(this), 5000);
-	};
-
-	Disc.prototype.recall = function () {
-	  this.PLAYER.removeDisc(this);
-	  this.game.removeDisc(this);
-	};
-
-	Disc.prototype.collideWith = function (otherObject) {
-	  // check for instanceof Player or ComputerPlayer??
-
-	    if (otherObject instanceof MovingObject) {
-	      if (!(otherObject instanceof Disc)) {
-	        otherObject.hitByDisc(this.vel);
-	      }
-	      this.vel = [this.vel[0] * -1, this.vel[1] * -1];
-
-	    } else if (otherObject instanceof StationaryObject) {
-	      this.vel = otherObject.bounceVec(this.vel);
-	    }
-	};
-
-	Disc.prototype.isCollidedWith = function (otherObject) {
-	  if (otherObject instanceof MovingObject) {
-	    var xDiff = (this.pos[0] - otherObject.pos[0]);
-	    var yDiff = (this.pos[1] - otherObject.pos[1]);
-	    var radii = this.radius + otherObject.radius;
-	    var distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-	    if (distance < radii) {
-	      return true;
-	    }
-	    return false;
-	  } else if (otherObject.type !== 'platform'){
-	    if (
-	      (this.pos[0] < otherObject.x + otherObject.width) &&
-	      (this.pos[0] > otherObject.x) &&
-	      (this.pos[1] < otherObject.y + otherObject.height) &&
-	      (this.pos[1] > otherObject.y)
-	    ) {
-	        return true;
-	      } else {
-	        return false;
-	      }
-	  } else {
-	    return false;
-	  }
-	};
-	module.exports = Disc;
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Util = __webpack_require__(4);
-
-	var StationaryObject = function (args) {
-	  this.type = args["type"];
-	  this.x = args["x"];
-	  this.y = args["y"];
-	  this.width = args["width"];
-	  this.height = args["height"];
-	  this.color = args["color"];
-	};
-
-	StationaryObject.prototype.bounceVec = function (vel) {
-	  if (this.type === 'platform'){
-	    return;
-	  } else if (this.type === 'north' || this.type === 'south') {
-	    return ([vel[0], vel[1] * -1]);
-	  } else if (this.type === 'west' || this.type === 'east') {
-	    return ([vel[0] * -1, vel[1]]);
-	  }
-	};
-
-	StationaryObject.prototype.collideWith = function () {
-
-	};
-
-	StationaryObject.prototype.isCollidedWith = function () {
-	  return false;
-	};
-
-	StationaryObject.prototype.move = function () {
-
-	};
-
-	StationaryObject.prototype.draw = function (ctx) {
-	  ctx.fillStyle = this.color;
-	  ctx.fillRect(
-	    this.x,
-	    this.y,
-	    this.width,
-	    this.height
-	  );
-	};
-
-	module.exports = StationaryObject;
 
 
 /***/ }

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link href='https://fonts.googleapis.com/css?family=Orbitron:900,400' rel='stylesheet' type='text/css'>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="application.css">
     <script src="jquery-1.12.3.min.js"></script>
@@ -8,12 +9,20 @@
   </head>
   <body>
     <script src="node_modules/keymaster/keymaster.js"></script>
-    <h1>Rebound</h1>
-    <div class='game-container'>
+    <div class='info-container'>
+    <div class='header'>Rebound</div>
       <button>Play Game</button>
-    <br/><br/><br/>
-      <canvas id="game-canvas" width="600" height="600"></canvas>
+      <br/><br/><br/>
+      <p class='info'>
+        Click above to start<br/>
+        w, s, a, d - move<br/>
+        click - throw disc<br/>
+      </p>
+      <div class='message'>
+        Throw discs to push Crom off his platform!
+      </div>
     </div>
+      <canvas id="game-canvas" width="600" height="600"></canvas>
     <script src="bundle.js"></script>
   </body>
 </html>

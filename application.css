@@ -1,16 +1,17 @@
 body {
   background-color: black;
+
+  /*to fix issue with selecting text while playing game*/
+
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
 }
 
-h1 {
-  text-align: center;
-  letter-spacing: 3px;
-  color: black;
-  text-shadow:
-   -1px -1px 0 #b17200,
-    1px -1px 0 #b17200,
-    -1px 1px 0 #b17200,
-     1px 1px 0 #b17200;
+div, button {
+  padding: 0;
+  margin: auto;
 }
 
 button {
@@ -31,13 +32,46 @@ button:hover {
 div {
   padding: 0;
   margin: auto;
-  width: 600px;
+  width: 200px;
 }
 
 canvas {
-  padding: 0;
+  position: absolute;
+  padding: 5px;
   margin: auto;
   cursor: crosshair;
   border: 1px solid #b17200;
 
+}
+
+.info {
+  color: grey;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.info-container {
+  display: block;
+  float: left;
+  width: 300px;
+}
+
+.header {
+  font-family: 'Orbitron', sans-serif;  text-align: center;
+  font-weight: bolder;
+  font-size: 32px;
+  letter-spacing: 3px;
+  line-height: 2em;
+  color: black;
+  text-shadow:
+   -1px -1px 0 #b17200,
+    1px -1px 0 #b17200,
+    -1px 1px 0 #b17200,
+     1px 1px 0 #b17200;
+}
+
+.message {
+  font-family: 'Orbitron', sans-serif;  text-align: center;
+  color: #b17200;
+  letter-spacing: 2px;
 }
