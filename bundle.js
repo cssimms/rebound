@@ -62,7 +62,6 @@
 	  newGameView.start();
 	};
 
-
 	$('button').on('click', initiateNew);
 
 
@@ -149,7 +148,7 @@
 	      this.players[key].fall();
 	      this.looser = key;
 	    }
-	    if (this.players[key].fallCount > 9){
+	    if (this.players[key].fallCount > 10){
 	      this.state = 'over';
 	    }
 	  }.bind(this));
@@ -224,12 +223,14 @@
 
 	  Object.keys(walls).forEach(function (key) {
 	    ctx.fillStyle = walls[key].color;
-	    ctx.fillRect(
-	      walls[key]['x'],
-	      walls[key]['y'],
-	      walls[key]['width'],
-	      walls[key]['height']
-	    );
+	    ctx.beingPath();
+	      ctx.rect(
+	        walls[key]['x'],
+	        walls[key]['y'],
+	        walls[key]['width'],
+	        walls[key]['height']
+	      );
+	    ctx.stroke();
 	  });
 
 	};
@@ -237,8 +238,6 @@
 	Arena.prototype.move = function () {
 	  return;
 	};
-
-
 
 	Arena.prototype.platforms = function (level) {
 	  return ({
@@ -262,7 +261,7 @@
 	};
 
 	Arena.prototype.walls = function (level) {
-	  var color = '#ffffff';
+	  var color = '#590089';
 	  return ([
 	    new StationaryObject ({
 	      type: 'north',
@@ -375,6 +374,46 @@
 	      },
 	      east: {
 	        x: 590,
+	        y: 0,
+	        width: 10,
+	        height: 600,
+	      }
+	    };
+	    break;
+	  case 3:
+	    this.levelVariables = {
+	      opponent: {
+	        x: 200,
+	        y: 20,
+	        width: 200,
+	        height: 200,
+	      },
+	      player: {
+	        x: 250,
+	        y: 480,
+	        width: 100,
+	        height: 100,
+	      },
+	      north: {
+	        x: 150,
+	        y: 0,
+	        width: 300,
+	        height: 10,
+	      },
+	      south: {
+	        x: 150,
+	        y: 590,
+	        width: 300,
+	        height: 10,
+	      },
+	      west: {
+	        x: 150,
+	        y: 0,
+	        width: 10,
+	        height: 600,
+	      },
+	      east: {
+	        x: 440,
 	        y: 0,
 	        width: 10,
 	        height: 600,
@@ -508,14 +547,17 @@
 	    return;
 	  }
 	  var x, y;
-	  x = event.clientX;
+
+	  // offset x coord to account for window spacing
+
+	  x = event.clientX + -300;
 	  y = event.clientY;
 	  var disc = new Disc({
 	    player: this,
 	    game: this.game,
 	    pos: this.pos.slice(),
 	    target: [x,y],
-	    color: '#0000a1'
+	    color: '#0404ff'
 	  });
 	  this.discs.push(disc);
 	  this.game.shootDisc(disc);
@@ -870,11 +912,20 @@
 	GameView.prototype.loop = function () {
 	  var that = this;
 	  var game = this.game;
+
+	  if (that.game.level === 1){
+	    $('.message').text('Level 1');
+	  } else if (that.game.level === 2){
+	    $('.message').text('Level 2');
+	  } else if (that.game.level === 3){
+	    $('.message').text('Final Level');
+	  }
+
 	  if (game.state === 'over'){
 	    that.stop();
 	    if (game.looser === 'player') {
 	      $('.message').text('You Lose');
-	    } else if (that.game.level > 1){
+	    } else if (this.game.level > 2){
 	      $('.message').text('You Win!');
 	    } else {
 	      var newGame = new Game(game.level + 1);
@@ -889,10 +940,28 @@
 
 	GameView.prototype.bindKeyHandlers = function () {
 	  var human = this.game.players.player;
-	  key('w', human.step.bind(human, [0, -1]));
-	  key('s', human.step.bind(human, [0, 1]));
-	  key('a', human.step.bind(human, [-1, 0]));
-	  key('d', human.step.bind(human, [1, 0]));
+	  window.addEventListener('keydown', function (event) {
+	    switch (event.keyCode) {
+	      case 65:
+	        human.step([-1, 0]);
+	        break;
+	      case 68:
+	        human.step([1, 0]);
+	        break;
+	      case 83:
+	        human.step([0, 1]);
+	        break;
+	      case 87:
+	        human.step([0, -1]);
+	        break;
+	    }
+	  });
+	  window.addEventListener('keyup', function (event) {
+	  });
+	  // key('w', human.step.bind(human, [0, -1]));
+	  // key('s', human.step.bind(human, [0, 1]));
+	  // key('a', human.step.bind(human, [-1, 0]));
+	  // key('d', human.step.bind(human, [1, 0]));
 	  window.addEventListener('click', human.shoot.bind(human));
 	};
 
