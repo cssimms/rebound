@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Game = __webpack_require__(1);
-	var GameView = __webpack_require__(9);
+	var GameView = __webpack_require__(10);
 
 	var element = document.getElementById("game-canvas");
 	var ctx = element.getContext("2d");
@@ -70,17 +70,17 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Arena = __webpack_require__(2),
-	Player = __webpack_require__(5),
-	ComputerPlayer = __webpack_require__(8);
+	Player = __webpack_require__(6),
+	ComputerPlayer = __webpack_require__(9);
 
 	var Game = function (level) {
 	  this.DIM_X = 600;
 	  this.DIM_Y = 600;
 	  this.level = level;
 	  this.arena = new Arena(this.level);
-	  this.players = {};
 	  this.state = 'running';
 	  this.looser = null;
+	  this.players = {};
 	  this.players['player'] = new Player({game:this, pos: [300,530]});
 	  this.players['opponent'] = new ComputerPlayer(
 	    {
@@ -159,6 +159,7 @@
 	    this.players['opponent'],
 	    this.players['player']
 	  ].concat(this.discs).concat(this.arena.WALLS);
+	  
 	  this.discs.forEach(function (disc) {
 	    for (var i = 0; i < collisionProne.length; i++){
 	      var object = collisionProne[i];
@@ -177,13 +178,13 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var StationaryObject = __webpack_require__(3);
+	var StationaryObject = __webpack_require__(3),
+	LevelSettings = __webpack_require__(5);
 
 	var Arena = function (level) {
 	  this.LEVEL = level;
 	  this.COLOR = '#404040';
-	  this.levelVariables = {};
-	  this.setLevel(this.LEVEL);
+	  this.LEVELSETTINGS = LevelSettings(level);
 	  this.PLATFORMS = this.platforms();
 	  this.WALLS = this.walls();
 	};
@@ -243,18 +244,18 @@
 	  return ({
 	    opponent: new StationaryObject({
 	      type: 'platform',
-	      x: this.levelVariables.opponent.x,
-	      y: this.levelVariables.opponent.y,
-	      width: this.levelVariables.opponent.width,
-	      height: this.levelVariables.opponent.height,
+	      x: this.LEVELSETTINGS.opponent.x,
+	      y: this.LEVELSETTINGS.opponent.y,
+	      width: this.LEVELSETTINGS.opponent.width,
+	      height: this.LEVELSETTINGS.opponent.height,
 	      color: '#404040'
 	    }),
 	    player: new StationaryObject({
 	      type: 'platform',
-	      x: this.levelVariables.player.x,
-	      y: this.levelVariables.player.y,
-	      width: this.levelVariables.player.width,
-	      height: this.levelVariables.player.height,
+	      x: this.LEVELSETTINGS.player.x,
+	      y: this.LEVELSETTINGS.player.y,
+	      width: this.LEVELSETTINGS.player.width,
+	      height: this.LEVELSETTINGS.player.height,
 	      color: '#404040'
 	    })
 	  });
@@ -265,162 +266,37 @@
 	  return ([
 	    new StationaryObject ({
 	      type: 'north',
-	      x: this.levelVariables.north.x,
-	      y: this.levelVariables.north.y,
-	      width: this.levelVariables.north.width,
-	      height: this.levelVariables.north.height,
+	      x: this.LEVELSETTINGS.north.x,
+	      y: this.LEVELSETTINGS.north.y,
+	      width: this.LEVELSETTINGS.north.width,
+	      height: this.LEVELSETTINGS.north.height,
 	      color: color
 	    }),
 	    new StationaryObject ({
 	      type: 'south',
-	      x: this.levelVariables.south.x,
-	      y: this.levelVariables.south.y,
-	      width: this.levelVariables.south.width,
-	      height: this.levelVariables.south.height,
+	      x: this.LEVELSETTINGS.south.x,
+	      y: this.LEVELSETTINGS.south.y,
+	      width: this.LEVELSETTINGS.south.width,
+	      height: this.LEVELSETTINGS.south.height,
 	      color: color
 	    }),
 	    new StationaryObject ({
 	      type: 'west',
-	      x: this.levelVariables.west.x,
-	      y: this.levelVariables.west.y,
-	      width: this.levelVariables.west.width,
-	      height: this.levelVariables.west.height,
+	      x: this.LEVELSETTINGS.west.x,
+	      y: this.LEVELSETTINGS.west.y,
+	      width: this.LEVELSETTINGS.west.width,
+	      height: this.LEVELSETTINGS.west.height,
 	      color: color
 	    }),
 	    new StationaryObject({
 	      type: 'east',
-	      x: this.levelVariables.east.x,
-	      y: this.levelVariables.east.y,
-	      width: this.levelVariables.east.width,
-	      height: this.levelVariables.east.height,
+	      x: this.LEVELSETTINGS.east.x,
+	      y: this.LEVELSETTINGS.east.y,
+	      width: this.LEVELSETTINGS.east.width,
+	      height: this.LEVELSETTINGS.east.height,
 	      color: color
 	    })
 	  ]);
-	};
-
-	Arena.prototype.setLevel = function (level) {
-	  switch (level){
-	    case 1:
-	      this.levelVariables = {
-	        opponent: {
-	          x: 250,
-	          y: 20,
-	          width: 100,
-	          height: 100,
-	        },
-	        player: {
-	          x: 170,
-	          y: 380,
-	          width: 260,
-	          height: 200,
-	        },
-	        north: {
-	          x: 150,
-	          y: 0,
-	          width: 300,
-	          height: 10,
-	        },
-	        south: {
-	          x: 150,
-	          y: 590,
-	          width: 300,
-	          height: 10,
-	        },
-	        west: {
-	          x: 150,
-	          y: 0,
-	          width: 10,
-	          height: 600,
-	        },
-	        east: {
-	          x: 440,
-	          y: 0,
-	          width: 10,
-	          height: 600,
-	        }
-	      };
-	      break;
-	  case 2:
-	    this.levelVariables = {
-	      opponent: {
-	        x: 170,
-	        y: 20,
-	        width: 260,
-	        height: 100,
-	      },
-	      player: {
-	        x: 20,
-	        y: 380,
-	        width: 560,
-	        height: 200,
-	      },
-	      north: {
-	        x: 0,
-	        y: 0,
-	        width: 600,
-	        height: 10,
-	      },
-	      south: {
-	        x: 0,
-	        y: 590,
-	        width: 600,
-	        height: 10,
-	      },
-	      west: {
-	        x: 0,
-	        y: 0,
-	        width: 10,
-	        height: 600,
-	      },
-	      east: {
-	        x: 590,
-	        y: 0,
-	        width: 10,
-	        height: 600,
-	      }
-	    };
-	    break;
-	  case 3:
-	    this.levelVariables = {
-	      opponent: {
-	        x: 200,
-	        y: 20,
-	        width: 200,
-	        height: 200,
-	      },
-	      player: {
-	        x: 250,
-	        y: 480,
-	        width: 100,
-	        height: 100,
-	      },
-	      north: {
-	        x: 150,
-	        y: 0,
-	        width: 300,
-	        height: 10,
-	      },
-	      south: {
-	        x: 150,
-	        y: 590,
-	        width: 300,
-	        height: 10,
-	      },
-	      west: {
-	        x: 150,
-	        y: 0,
-	        width: 10,
-	        height: 600,
-	      },
-	      east: {
-	        x: 440,
-	        y: 0,
-	        width: 10,
-	        height: 600,
-	      }
-	    };
-	    break;
-	  }
 	};
 
 	module.exports = Arena;
@@ -509,11 +385,139 @@
 
 /***/ },
 /* 5 */
+/***/ function(module, exports) {
+
+	var levelSettings = function (level) {
+	  switch (level){
+	    case 1:
+	      return {
+	        opponent: {
+	          x: 250,
+	          y: 20,
+	          width: 100,
+	          height: 100,
+	        },
+	        player: {
+	          x: 170,
+	          y: 380,
+	          width: 260,
+	          height: 200,
+	        },
+	        north: {
+	          x: 150,
+	          y: 0,
+	          width: 300,
+	          height: 10,
+	        },
+	        south: {
+	          x: 150,
+	          y: 590,
+	          width: 300,
+	          height: 10,
+	        },
+	        west: {
+	          x: 150,
+	          y: 0,
+	          width: 10,
+	          height: 600,
+	        },
+	        east: {
+	          x: 440,
+	          y: 0,
+	          width: 10,
+	          height: 600,
+	        }
+	      };
+	  case 2:
+	    return {
+	      opponent: {
+	        x: 170,
+	        y: 20,
+	        width: 260,
+	        height: 100,
+	      },
+	      player: {
+	        x: 20,
+	        y: 380,
+	        width: 560,
+	        height: 200,
+	      },
+	      north: {
+	        x: 0,
+	        y: 0,
+	        width: 600,
+	        height: 10,
+	      },
+	      south: {
+	        x: 0,
+	        y: 590,
+	        width: 600,
+	        height: 10,
+	      },
+	      west: {
+	        x: 0,
+	        y: 0,
+	        width: 10,
+	        height: 600,
+	      },
+	      east: {
+	        x: 590,
+	        y: 0,
+	        width: 10,
+	        height: 600,
+	      }
+	    };
+	  case 3:
+	    return {
+	      opponent: {
+	        x: 200,
+	        y: 20,
+	        width: 200,
+	        height: 200,
+	      },
+	      player: {
+	        x: 250,
+	        y: 480,
+	        width: 100,
+	        height: 100,
+	      },
+	      north: {
+	        x: 150,
+	        y: 0,
+	        width: 300,
+	        height: 10,
+	      },
+	      south: {
+	        x: 150,
+	        y: 590,
+	        width: 300,
+	        height: 10,
+	      },
+	      west: {
+	        x: 150,
+	        y: 0,
+	        width: 10,
+	        height: 600,
+	      },
+	      east: {
+	        x: 440,
+	        y: 0,
+	        width: 10,
+	        height: 600,
+	      }
+	    };
+	  }
+	};
+	module.exports = levelSettings;
+
+
+/***/ },
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Utils = __webpack_require__(4),
-	Disc = __webpack_require__(6),
-	MovingObject = __webpack_require__(7);
+	Disc = __webpack_require__(7),
+	MovingObject = __webpack_require__(8);
 
 	var Player = function(args){
 	  this.RADIUS = 10;
@@ -603,11 +607,11 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Util = __webpack_require__(4),
-	MovingObject = __webpack_require__(7),
+	MovingObject = __webpack_require__(8),
 	StationaryObject = __webpack_require__(3);
 
 	var Disc = function (args) {
@@ -643,8 +647,6 @@
 	};
 
 	Disc.prototype.collideWith = function (otherObject) {
-	  // check for instanceof Player or ComputerPlayer??
-
 	    if (otherObject instanceof MovingObject) {
 	      if (!(otherObject instanceof Disc)) {
 	        otherObject.hitByDisc(this.vel);
@@ -658,34 +660,42 @@
 
 	Disc.prototype.isCollidedWith = function (otherObject) {
 	  if (otherObject instanceof MovingObject) {
-	    var xDiff = (this.pos[0] - otherObject.pos[0]);
-	    var yDiff = (this.pos[1] - otherObject.pos[1]);
-	    var radii = this.radius + otherObject.radius;
-	    var distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-	    if (distance < radii) {
-	      return true;
-	    }
-	    return false;
+	    return this.isCollidedWithMovingObject(otherObject);
 	  } else if (otherObject.type !== 'platform'){
-	    if (
-	      (this.pos[0] < otherObject.x + otherObject.width) &&
-	      (this.pos[0] > otherObject.x) &&
-	      (this.pos[1] < otherObject.y + otherObject.height) &&
-	      (this.pos[1] > otherObject.y)
-	    ) {
-	        return true;
-	      } else {
-	        return false;
-	      }
+	    return this.isCollidedWithWall(otherObject);
 	  } else {
 	    return false;
 	  }
+	};
+
+	Disc.prototype.isCollidedWithWall = function (otherObject) {
+	  if (
+	    (this.pos[0] < otherObject.x + otherObject.width) &&
+	    (this.pos[0] > otherObject.x) &&
+	    (this.pos[1] < otherObject.y + otherObject.height) &&
+	    (this.pos[1] > otherObject.y)
+	  ) {
+	    return true;
+	  } else {
+	    return false;
+	  }
+	};
+
+	Disc.prototype.isCollidedWithMovingObject = function (otherObject) {
+	  var xDiff = (this.pos[0] - otherObject.pos[0]);
+	  var yDiff = (this.pos[1] - otherObject.pos[1]);
+	  var radii = this.radius + otherObject.radius;
+	  var distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+	  if (distance < radii) {
+	    return true;
+	  }
+	  return false;
 	};
 	module.exports = Disc;
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var StationaryObject = __webpack_require__(3);
@@ -724,12 +734,12 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Util = __webpack_require__(4),
-	Disc = __webpack_require__(6),
-	MovingObject = __webpack_require__(7);
+	Disc = __webpack_require__(7),
+	MovingObject = __webpack_require__(8);
 
 	var ComputerPlayer = function (args) {
 	  this.RADIUS = 10;
@@ -885,13 +895,13 @@
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* global key */
 
 	var Utils = __webpack_require__(4),
-	MovingObject = __webpack_require__(7),
+	MovingObject = __webpack_require__(8),
 	Game = __webpack_require__(1);
 
 	var GameView = function(game, ctx){
