@@ -550,6 +550,11 @@
 	  this.vel[1] = (this.vel[1] + direction[1] * 2) * .7;
 	};
 
+	Player.prototype.standStill = function () {
+	  // this.vel[0] = this.vel[0] / 10;
+	  // this.vel[1] = this.vel[1] / 10;
+	};
+
 	Player.prototype.shoot = function (event) {
 	  if (this.discs.length > 4){
 	    return;
@@ -969,7 +974,7 @@
 	    }
 	  });
 
-	  window.addEventListener('keyup', function (event) {});
+	  window.addEventListener('keyup', human.standStill.bind(human));
 
 	  window.addEventListener('click', human.shoot.bind(human));
 	};
