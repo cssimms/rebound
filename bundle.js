@@ -110,9 +110,12 @@
 	};
 
 	Game.prototype.draw = function (ctx) {
+	    var image = new Image();
+	    image.src = './assets/stars.jpg';
 	    ctx.clearRect(0, 0, 600, 600);
-	    ctx.fillStyle = "#000000";
-	    ctx.fillRect(0,0,600,600);
+	    ctx.drawImage(image, 0, 0, 600, 600);
+	    // ctx.fillStyle = "#000000";
+	    // ctx.fillRect(0,0,600,600);
 	    this.allObjects().forEach(function(object){
 	      object.draw(ctx);
 	    });
@@ -148,6 +151,7 @@
 	      this.players[key].fall();
 	      this.looser = key;
 	    }
+
 	    if (this.players[key].fallCount > 10){
 	      this.state = 'over';
 	    }
@@ -159,7 +163,7 @@
 	    this.players['opponent'],
 	    this.players['player']
 	  ].concat(this.discs).concat(this.arena.WALLS);
-	  
+
 	  this.discs.forEach(function (disc) {
 	    for (var i = 0; i < collisionProne.length; i++){
 	      var object = collisionProne[i];
@@ -183,7 +187,7 @@
 
 	var Arena = function (level) {
 	  this.LEVEL = level;
-	  this.COLOR = '#404040';
+	  this.PLATFORMCOLOR = '#404040';
 	  this.LEVELSETTINGS = LevelSettings(level);
 	  this.PLATFORMS = this.platforms();
 	  this.WALLS = this.walls();
@@ -248,7 +252,7 @@
 	      y: this.LEVELSETTINGS.opponent.y,
 	      width: this.LEVELSETTINGS.opponent.width,
 	      height: this.LEVELSETTINGS.opponent.height,
-	      color: '#404040'
+	      color: this.PLATFORMCOLOR
 	    }),
 	    player: new StationaryObject({
 	      type: 'platform',
@@ -256,7 +260,7 @@
 	      y: this.LEVELSETTINGS.player.y,
 	      width: this.LEVELSETTINGS.player.width,
 	      height: this.LEVELSETTINGS.player.height,
-	      color: '#404040'
+	      color: this.PLATFORMCOLOR
 	    })
 	  });
 	};
@@ -898,8 +902,6 @@
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* global key */
-
 	var Utils = __webpack_require__(4),
 	MovingObject = __webpack_require__(8),
 	Game = __webpack_require__(1);
@@ -966,12 +968,9 @@
 	        break;
 	    }
 	  });
-	  window.addEventListener('keyup', function (event) {
-	  });
-	  // key('w', human.step.bind(human, [0, -1]));
-	  // key('s', human.step.bind(human, [0, 1]));
-	  // key('a', human.step.bind(human, [-1, 0]));
-	  // key('d', human.step.bind(human, [1, 0]));
+
+	  window.addEventListener('keyup', function (event) {});
+
 	  window.addEventListener('click', human.shoot.bind(human));
 	};
 
