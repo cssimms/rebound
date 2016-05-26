@@ -1,6 +1,9 @@
 # Rebound
 
-figure out background styling - picture? it's already in assets.
+priorities:
+- [ ] 
+
+refactor moving object classes - not enough weight in moving object class, possibly get rid of it
 
 continue refactoring
 
@@ -21,3 +24,5 @@ Player#fall overwrites that instances draw function to continually decrease the 
 - [ ] available disc display
 - [ ] disc return animation
 - [ ] walls electric arc animation
+- [ ] increase player size
+- [ ] move message into a modal or display absolute popup in front of screen, use as a countdown to start next level. (the transition is too harsh)

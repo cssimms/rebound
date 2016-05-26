@@ -152,7 +152,7 @@
 	      this.looser = key;
 	    }
 
-	    if (this.players[key].fallCount > 10){
+	    if (this.players[key].fallCount > 20){
 	      this.state = 'over';
 	    }
 	  }.bind(this));
@@ -524,7 +524,7 @@
 	MovingObject = __webpack_require__(8);
 
 	var Player = function(args){
-	  this.RADIUS = 10;
+	  this.RADIUS = 20;
 	  this.COLOR = '#6666ff';
 	  this.fallCount = 0;
 	  this.moveCount = 0;
@@ -556,7 +556,7 @@
 	};
 
 	Player.prototype.shoot = function (event) {
-	  if (this.discs.length > 4){
+	  if (this.discs.length > 2){
 	    return;
 	  }
 	  var x, y;
@@ -567,10 +567,11 @@
 	  y = event.clientY;
 	  var disc = new Disc({
 	    player: this,
+	    team: 'human',
 	    game: this.game,
 	    pos: this.pos.slice(),
 	    target: [x,y],
-	    color: '#0404ff'
+	    color: 'rgba(29,222,240, 1)'
 	  });
 	  this.discs.push(disc);
 	  this.game.shootDisc(disc);
@@ -621,12 +622,17 @@
 
 	var Util = __webpack_require__(4),
 	MovingObject = __webpack_require__(8),
+	Player = __webpack_require__(6),
 	StationaryObject = __webpack_require__(3);
 
 	var Disc = function (args) {
-	  this.RADIUS = 5;
+	  this.RADIUS = 13;
 	  this.VELOCITY = this.calcVel(args['pos'], args['target']);
+	  this.pastPos = [];
 	  this.PLAYER = args['player'];
+	  this.team = args['team'];
+	  this.image = this.getImage();
+
 	  MovingObject.call(this, {
 	    game: args['game'],
 	    pos: args['pos'],
@@ -641,7 +647,17 @@
 
 	Disc.prototype.calcVel = function (start, target) {
 	  var vel = Util.normalizedVector(start, target);
-	  return [vel[0] * 3, vel[1] * 3];
+	  return [vel[0] * 5, vel[1] * 5];
+	};
+
+	Disc.prototype.getImage = function () {
+	  var image = new Image();
+	  if (this.team === "human") {
+	    image.src = './assets/blue_disc.png';
+	  } else {
+	    image.src = './assets/orange_disc.png';
+	  }
+	  return image;
 	};
 
 	Disc.prototype.startRecallTimer = function () {
@@ -700,6 +716,45 @@
 	  }
 	  return false;
 	};
+
+	Disc.prototype.draw = function (ctx) {
+	  ctx.lineWidth = 5;
+
+	  if (this.pastPos.length > 1) {
+	    this.drawTrace(ctx);
+	    if (this.pastPos.length > 10) {
+	      this.pastPos.pop();
+	    }
+	  }
+	  this.pastPos.unshift(this.pos.slice());
+	  // offset image placement to center on radius of collision
+	  ctx.drawImage(this.image, this.pos[0] - 15, this.pos[1] - 15, 30, 30);
+	};
+
+	Disc.prototype.drawTrace = function (ctx) {
+	  var opac = '0.3';
+	  var radius = this.radius;
+	  ctx.compositeOperation = 'lighter';
+
+	  for (var i = 0; i < this.pastPos.length - 1; i++){
+	    ctx.fillStyle = this.color.slice(0, -2) + opac + ")";
+
+	    ctx.beginPath();
+	    ctx.arc(
+	      this.pastPos[i][0],
+	      this.pastPos[i][1],
+	      radius,
+	      0,
+	      2 * Math.PI,
+	      false
+	    );
+	    ctx.fill();
+
+	    opac = opac - 0.02;
+	    radius -= 0.5;
+	  }
+	};
+
 	module.exports = Disc;
 
 
@@ -735,7 +790,6 @@
 	MovingObject.prototype.move = function(){
 	  this.pos[0] += this.vel[0];
 	  this.pos[1] += this.vel[1];
-	  // this.pos = this.game.wrap(this.pos);
 	};
 
 
@@ -746,12 +800,12 @@
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Util = __webpack_require__(4),
+	var Utils = __webpack_require__(4),
 	Disc = __webpack_require__(7),
 	MovingObject = __webpack_require__(8);
 
 	var ComputerPlayer = function (args) {
-	  this.RADIUS = 10;
+	  this.RADIUS = 20;
 	  this.COLOR = '#ff6666';
 
 	  this.fallCount = 0;
@@ -777,7 +831,7 @@
 	  );
 	};
 
-	Util.inherits(ComputerPlayer, MovingObject);
+	Utils.inherits(ComputerPlayer, MovingObject);
 
 	ComputerPlayer.prototype.think = function () {
 	  this.moveCount++;
@@ -795,17 +849,19 @@
 	};
 
 	ComputerPlayer.prototype.shoot = function (event) {
-	  if (this.discs.length > 4){
+	  if (this.discs.length > 2){
 	    return;
 	  }
 	  var x = this.human.pos[0];
 	  var y = this.human.pos[1];
+
 	  var compDisc = new Disc({
 	    player: this,
+	    team: 'computer',
 	    game: this.game,
 	    pos: this.pos.slice(),
 	    target: [x,y],
-	    color: '#7f3333'
+	    color: 'rgba(252, 127, 38, 1)'
 	  });
 	  this.discs.push(compDisc);
 	  this.game.shootDisc(compDisc);
@@ -848,7 +904,7 @@
 
 	  this.target.pos = [target[0], target[1]];
 
-	  var vector = Util.normalizedVector(this.pos, target);
+	  var vector = Utils.normalizedVector(this.pos, target);
 	  this.vel = [this.vel[0] + vector[0], this.vel[1] + vector[1]];
 	};
 
