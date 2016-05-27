@@ -998,7 +998,7 @@
 	    //
 	    // ctx.fill();
 	    var image = new Image();
-	    image.src = './assets/player_sprites.png';
+	    image.src = './assets/crom_sprites.png';
 	    var fallSize = 50 - this.fallCount * 2;
 	    ctx.drawImage(image, 56, 2, 19, 24,
 	      this.pos[0] - 20, this.pos[1] - 40, fallSize, fallSize);
