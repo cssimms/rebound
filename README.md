@@ -1,28 +1,19 @@
 # Rebound
 
-priorities:
-- [ ] 
-
-refactor moving object classes - not enough weight in moving object class, possibly get rid of it
-
-continue refactoring
-
 Rebound is an overhead 2D arcade-style game based on the spirit of the 1983 Bally Midway arcade game Discs of Tron.  
 
-
-#### Players falling
-Player#fall overwrites that instances draw function to continually decrease the radius of the drawn circle until it doesn't have a radius. Then the Player#draw will simply return early. This creates the animation of a player falling off the platform.
-
-
+* Built in JavaScript following Object Oriented Design
+* Uses HTML Canvas and setInterval() to render game
+* Wrote custom AI that targets the player while changing direction and speed erratically
 
 #### Future Goals
+- [x] light trails for discs
+- [x] increase player size
 - [ ] rework player movement
 - [ ] add more levels and Boss Battles?
-- [ ] light trails for discs
-- [ ] sprites(platforms and players)
+- [ ] sprites(platforms and walls)
 - [ ] score counter
 - [ ] available disc display
 - [ ] disc return animation
 - [ ] walls electric arc animation
-- [ ] increase player size
-- [ ] move message into a modal or display absolute popup in front of screen, use as a countdown to start next level. (the transition is too harsh)
+- [ ] move message into a modal or display absolute popup in front of screen, use as a countdown to start next level.
