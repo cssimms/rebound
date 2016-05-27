@@ -530,6 +530,7 @@
 	  this.moveCount = 0;
 	  this.discs = [];
 	  this.fallen = false;
+	  this.image = this.getImage();
 	  MovingObject.call(this, {
 	      game: args['game'],
 	      pos: args['pos'],
@@ -541,6 +542,12 @@
 	};
 
 	Utils.inherits(Player, MovingObject);
+
+	Player.prototype.getImage = function () {
+	  var image = new Image();
+	  image.src = './assets/player_sprites.png';
+	  return image;
+	};
 
 	Player.prototype.step = function (direction) {
 	  if (this.vel[0] > 10 || this.vel[1] > 10){
@@ -589,21 +596,27 @@
 	Player.prototype.fall = function () {
 	  this.fallen = true;
 	  this.draw = function (ctx) {
-	    if (this.radius - this.fallCount < 0){
+	    if (50 - this.fallCount < 0){
 	      return;
 	    }
-	    ctx.fillStyle = this.color;
-	    ctx.beginPath();
-	    ctx.arc(
-	      this.pos[0],
-	      this.pos[1],
-	      this.radius - this.fallCount,
-	      0,
-	      2 * Math.PI,
-	      false
-	    );
+	    // ctx.fillStyle = this.color;
+	    // ctx.beginPath();
+	    // ctx.arc(
+	    //   this.pos[0],
+	    //   this.pos[1],
+	    //   this.radius - this.fallCount,
+	    //   0,
+	    //   2 * Math.PI,
+	    //   false
+	    // );
+	    //
+	    // ctx.fill();
+	    var image = new Image();
+	    image.src = './assets/player_sprites.png';
+	    var fallSize = 50 - this.fallCount * 2;
+	    ctx.drawImage(image, 56, 2, 19, 24,
+	      this.pos[0] - 20, this.pos[1] - 40, fallSize, fallSize);
 
-	    ctx.fill();
 	    this.fallCount += 1;
 	  };
 	};
@@ -612,6 +625,25 @@
 	  var index = this.discs.indexOf(disc);
 	  this.discs.splice(index, 1);
 	};
+
+	MovingObject.prototype.draw = function(ctx){
+	  ctx.drawImage(this.image, 56, 2, 19, 24, this.pos[0] - 20, this.pos[1] - 40, 40, 60);
+
+
+	  // ctx.fillStyle = this.color;
+	  //   ctx.beginPath();
+	  //   ctx.arc(
+	  //     this.pos[0],
+	  //     this.pos[1],
+	  //     this.radius,
+	  //     0,
+	  //     2 * Math.PI,
+	  //     false
+	  //   );
+	  //
+	  //   ctx.fill();
+	  };
+
 
 	module.exports = Player;
 
@@ -821,6 +853,7 @@
 	  this.discVel = null;
 	  this.discs = [];
 	  this.human = args['human'];
+	  this.image = this.getImage();
 	  MovingObject.call(this, {
 	      game: args['game'],
 	      pos: args['pos'],
@@ -832,6 +865,28 @@
 	};
 
 	Utils.inherits(ComputerPlayer, MovingObject);
+
+	ComputerPlayer.prototype.getImage = function () {
+	  var image = new Image();
+
+	  // var velSlope = Math.abs(this.vel[1] / this.vel[0]);
+	  // if (velSlope < 1) {
+	  //   if (this.vel[0] < 0) {
+	  //     // point left
+	  //   } else {
+	  //     // point right
+	  //   }
+	  // } else {
+	  //   if (this.vel[1] < 0){
+	  //     // point up
+	  //   } else {
+	  //     // point down
+	  //   }
+	  // }
+
+	  image.src = './assets/crom_sprites.png';
+	  return image;
+	};
 
 	ComputerPlayer.prototype.think = function () {
 	  this.moveCount++;
@@ -930,18 +985,24 @@
 	    if (this.radius - this.fallCount < 0){
 	      return;
 	    }
-	    ctx.fillStyle = this.color;
-	    ctx.beginPath();
-	    ctx.arc(
-	      this.pos[0],
-	      this.pos[1],
-	      this.radius - this.fallCount,
-	      0,
-	      2 * Math.PI,
-	      false
-	    );
+	    // ctx.fillStyle = this.color;
+	    // ctx.beginPath();
+	    // ctx.arc(
+	    //   this.pos[0],
+	    //   this.pos[1],
+	    //   this.radius - this.fallCount,
+	    //   0,
+	    //   2 * Math.PI,
+	    //   false
+	    // );
+	    //
+	    // ctx.fill();
+	    var image = new Image();
+	    image.src = './assets/player_sprites.png';
+	    var fallSize = 50 - this.fallCount * 2;
+	    ctx.drawImage(image, 56, 2, 19, 24,
+	      this.pos[0] - 20, this.pos[1] - 40, fallSize, fallSize);
 
-	    ctx.fill();
 	    this.fallCount += 1;
 	  };
 	};
@@ -955,6 +1016,23 @@
 	  var index = this.discs.indexOf(disc);
 	  this.discs.splice(index, 1);
 	};
+
+	ComputerPlayer.prototype.draw = function(ctx){
+	  ctx.drawImage(this.image, 38, 2, 18, 24, this.pos[0] - 20, this.pos[1] - 40, 40, 60);
+
+	  // ctx.fillStyle = this.color;
+	  //   ctx.beginPath();
+	  //   ctx.arc(
+	  //     this.pos[0],
+	  //     this.pos[1],
+	  //     this.radius,
+	  //     0,
+	  //     2 * Math.PI,
+	  //     false
+	  //   );
+	  //
+	  //   ctx.fill();
+	  };
 
 	module.exports = ComputerPlayer;
 
