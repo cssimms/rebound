@@ -1,5 +1,9 @@
 # Rebound
 
+[Live Game Link][gh-pages]
+
+[gh-pages]: https://cssimms.github.io/rebound
+
 Rebound is an overhead 2D arcade-style game based on the spirit of the 1983 Bally Midway arcade game Discs of Tron.  
 
 * Built in JavaScript following Object Oriented Design
