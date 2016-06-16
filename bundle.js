@@ -112,10 +112,8 @@
 	Game.prototype.draw = function (ctx) {
 	    var image = new Image();
 	    image.src = './assets/stars.jpg';
-	    ctx.clearRect(0, 0, 600, 600);
-	    ctx.drawImage(image, 0, 0, 600, 600);
-	    // ctx.fillStyle = "#000000";
-	    // ctx.fillRect(0,0,600,600);
+	    ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
+	    ctx.drawImage(image, 0, 0, this.DIM_X, this.DIM_Y);
 	    this.allObjects().forEach(function(object){
 	      object.draw(ctx);
 	    });
@@ -165,13 +163,12 @@
 	  ].concat(this.discs).concat(this.arena.WALLS);
 
 	  this.discs.forEach(function (disc) {
-	    for (var i = 0; i < collisionProne.length; i++){
-	      var object = collisionProne[i];
+	    collisionProne.forEach(function (object) {
 	      if (disc.isCollidedWith(object) &&
 	          disc !== object && disc.PLAYER !== object) {
 	        disc.collideWith(object);
 	      }
-	    }
+	    });
 	  });
 	};
 
@@ -198,17 +195,12 @@
 	};
 
 	Arena.prototype.onPlatform = function (pos, player) {
-	  var platType;
-	    if (
-	      (pos[0] < this.PLATFORMS[player].x + this.PLATFORMS[player].width) &&
-	      (pos[0] > this.PLATFORMS[player].x) &&
-	      (pos[1] < this.PLATFORMS[player].y + this.PLATFORMS[player].height) &&
-	      (pos[1] > this.PLATFORMS[player].y)
-	    ){
-	      return true;
-	    } else {
-	      return false;
-	    }
+	  var plats = this.PLATFORMS[player];
+
+	  return ((pos[0] < plats.x + plats.width) &&
+	         (pos[0] > plats.x) &&
+	         (pos[1] < plats.y + plats.height) &&
+	         (pos[1] > plats.y));
 	};
 
 	Arena.prototype.draw = function (ctx) {
@@ -229,12 +221,12 @@
 	  Object.keys(walls).forEach(function (key) {
 	    ctx.fillStyle = walls[key].color;
 	    ctx.beingPath();
-	      ctx.rect(
-	        walls[key]['x'],
-	        walls[key]['y'],
-	        walls[key]['width'],
-	        walls[key]['height']
-	      );
+	    ctx.rect(
+	      walls[key]['x'],
+	      walls[key]['y'],
+	      walls[key]['width'],
+	      walls[key]['height']
+	    );
 	    ctx.stroke();
 	  });
 
@@ -684,6 +676,7 @@
 
 	Disc.prototype.getImage = function () {
 	  var image = new Image();
+
 	  if (this.team === "human") {
 	    image.src = './assets/blue_disc.png';
 	  } else {
@@ -726,16 +719,10 @@
 	};
 
 	Disc.prototype.isCollidedWithWall = function (otherObject) {
-	  if (
-	    (this.pos[0] < otherObject.x + otherObject.width) &&
-	    (this.pos[0] > otherObject.x) &&
-	    (this.pos[1] < otherObject.y + otherObject.height) &&
-	    (this.pos[1] > otherObject.y)
-	  ) {
-	    return true;
-	  } else {
-	    return false;
-	  }
+	  return ((this.pos[0] < otherObject.x + otherObject.width) &&
+	         (this.pos[0] > otherObject.x) &&
+	         (this.pos[1] < otherObject.y + otherObject.height) &&
+	         (this.pos[1] > otherObject.y));
 	};
 
 	Disc.prototype.isCollidedWithMovingObject = function (otherObject) {
@@ -743,10 +730,7 @@
 	  var yDiff = (this.pos[1] - otherObject.pos[1]);
 	  var radii = this.radius + otherObject.radius;
 	  var distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-	  if (distance < radii) {
-	    return true;
-	  }
-	  return false;
+	  return (distance < radii);
 	};
 
 	Disc.prototype.draw = function (ctx) {
@@ -806,18 +790,18 @@
 
 	MovingObject.prototype.draw = function(ctx){
 	  ctx.fillStyle = this.color;
-	    ctx.beginPath();
-	    ctx.arc(
-	      this.pos[0],
-	      this.pos[1],
-	      this.radius,
-	      0,
-	      2 * Math.PI,
-	      false
-	    );
+	  ctx.beginPath();
+	  ctx.arc(
+	    this.pos[0],
+	    this.pos[1],
+	    this.radius,
+	    0,
+	    2 * Math.PI,
+	    false
+	  );
 
-	    ctx.fill();
-	  };
+	  ctx.fill();
+	};
 
 	MovingObject.prototype.move = function(){
 	  this.pos[0] += this.vel[0];
@@ -868,29 +852,13 @@
 
 	ComputerPlayer.prototype.getImage = function () {
 	  var image = new Image();
-
-	  // var velSlope = Math.abs(this.vel[1] / this.vel[0]);
-	  // if (velSlope < 1) {
-	  //   if (this.vel[0] < 0) {
-	  //     // point left
-	  //   } else {
-	  //     // point right
-	  //   }
-	  // } else {
-	  //   if (this.vel[1] < 0){
-	  //     // point up
-	  //   } else {
-	  //     // point down
-	  //   }
-	  // }
-
 	  image.src = './assets/crom_sprites.png';
 	  return image;
 	};
 
 	ComputerPlayer.prototype.think = function () {
 	  this.moveCount++;
-	  if (this.hit){
+	  if (this.hit) {
 	    this.getBounced();
 	    this.hit = false;
 	    this.moveRandom();
@@ -898,13 +866,13 @@
 	    this.moveRandom();
 	    this.moveCount = 0;
 	    this.shoot();
-	  } else if (this.nearTarget() || this.outsideSafeZone()){
+	  } else if (this.nearTarget() || this.outsideSafeZone()) {
 	    this.vel = [this.vel[0] * .7, this.vel[1] * .7];
 	  }
 	};
 
 	ComputerPlayer.prototype.shoot = function (event) {
-	  if (this.discs.length > 2){
+	  if (this.discs.length > 2) {
 	    return;
 	  }
 	  var x = this.human.pos[0];
@@ -934,16 +902,10 @@
 	};
 
 	ComputerPlayer.prototype.outsideSafeZone = function () {
-	  if (
-	    (this.pos[0] < this.safeZone.x + this.safeZone.width) &&
-	    (this.pos[0] > this.safeZone.x) &&
-	    (this.pos[1] < this.safeZone.y + this.safeZone.height) &&
-	    (this.pos[1] > this.safeZone.y)
-	  ) {
-	    return false;
-	  } else {
-	    return true;
-	  }
+	  return !((this.pos[0] < this.safeZone.x + this.safeZone.width) &&
+	           (this.pos[0] > this.safeZone.x) &&
+	           (this.pos[1] < this.safeZone.y + this.safeZone.height) &&
+	           (this.pos[1] > this.safeZone.y));
 	};
 
 	ComputerPlayer.prototype.moveNearOpposite = function () {
@@ -968,7 +930,7 @@
 	  var yDiff = (this.pos[1] - this.target.pos[1]);
 	  var radii = this.RADIUS + this.target.radius;
 	  var distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-	  if (distance < radii) {
+	  if (distance < radii) { //just return, no need for if
 	    return true;
 	  }
 	  return false;
@@ -985,18 +947,7 @@
 	    if (this.radius - this.fallCount < 0){
 	      return;
 	    }
-	    // ctx.fillStyle = this.color;
-	    // ctx.beginPath();
-	    // ctx.arc(
-	    //   this.pos[0],
-	    //   this.pos[1],
-	    //   this.radius - this.fallCount,
-	    //   0,
-	    //   2 * Math.PI,
-	    //   false
-	    // );
-	    //
-	    // ctx.fill();
+
 	    var image = new Image();
 	    image.src = './assets/crom_sprites.png';
 	    var fallSize = 50 - this.fallCount * 2;
@@ -1018,20 +969,9 @@
 	};
 
 	ComputerPlayer.prototype.draw = function(ctx){
-	  ctx.drawImage(this.image, 38, 2, 18, 24, this.pos[0] - 20, this.pos[1] - 40, 40, 60);
+	  ctx.drawImage(this.image, 38, 2, 18, 24,
+	    this.pos[0] - 20, this.pos[1] - 40, 40, 60);
 
-	  // ctx.fillStyle = this.color;
-	  //   ctx.beginPath();
-	  //   ctx.arc(
-	  //     this.pos[0],
-	  //     this.pos[1],
-	  //     this.radius,
-	  //     0,
-	  //     2 * Math.PI,
-	  //     false
-	  //   );
-	  //
-	  //   ctx.fill();
 	  };
 
 	module.exports = ComputerPlayer;
@@ -1061,31 +1001,34 @@
 	};
 
 	GameView.prototype.loop = function () {
-	  var that = this;
 	  var game = this.game;
 
-	  if (that.game.level === 1){
-	    $('.message').text('Level 1');
-	  } else if (that.game.level === 2){
-	    $('.message').text('Level 2');
-	  } else if (that.game.level === 3){
-	    $('.message').text('Final Level');
+	  switch (game.level) {
+	    case 1:
+	      $('.message').text('Level 1');
+	      break;
+	    case 2:
+	      $('.message').text('Level 2');
+	      break;
+	    case 3:
+	      $('.message').text('Final Level');
+	      break;
 	  }
 
-	  if (game.state === 'over'){
-	    that.stop();
+	  if (game.state === 'over') {
+	    this.stop();
+
 	    if (game.looser === 'player') {
 	      $('.message').text('You Lose');
-	    } else if (this.game.level > 2){
+	    } else if (game.level > 2) {
 	      $('.message').text('You Win!');
 	    } else {
-	      var newGame = new Game(game.level + 1);
-	      that.game = newGame;
-	      that.start();
+	      this.game = new Game(game.level + 1);
+	      this.start();
 	    }
 	  } else {
 	    game.step();
-	    game.draw(that.ctx);
+	    game.draw(this.ctx);
 	  }
 	};
 
