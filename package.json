@@ -4,9 +4,12 @@
   "description": "",
   "main": "bundle.js",
   "dependencies": {
-    "keymaster": "^1.6.2"
+    "keymaster": "^1.6.2",
+    "webpack": "^4.15.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "webpack-cli": "^3.0.8"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
