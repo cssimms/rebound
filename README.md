@@ -21,3 +21,7 @@ Rebound is an overhead 2D arcade-style game based on the spirit of the 1983 Ball
 - [ ] disc return animation
 - [ ] walls electric arc animation
 - [ ] move message into a modal or display absolute popup in front of screen, use as a countdown to start next level.
+
+#### Known Bugs 
+  [ ] clicking "start" fires your first disk
+  [ ] if moving on and off a platform quickly, sprite shrinks then grows again before dying
